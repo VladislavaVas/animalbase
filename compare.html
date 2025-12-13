@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сравнение пород - AnimalBase</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #8B4513;
+            --secondary-color: #D2B48C;
+            --accent-color: #A0522D;
+            --light-color: #FAF3E0;
+            --dark-color: #5D4037;
+        }
+        
+        .comparison-table {
+            overflow-x: auto;
+            border-radius: 10px;
+            border: 1px solid var(--secondary-color);
+        }
+        .table {
+            margin-bottom: 0;
+        }
+        .table th {
+            position: sticky;
+            left: 0;
+            background: var(--light-color);
+            z-index: 10;
+            min-width: 200px;
+            border-color: var(--secondary-color);
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+        .table td {
+            border-color: var(--secondary-color);
+            vertical-align: middle;
+        }
+        .breed-header {
+            min-width: 250px;
+            text-align: center;
+            background-color: var(--light-color);
+            border-color: var(--secondary-color);
+        }
+        .parameter-row {
+            background: rgba(139, 69, 19, 0.05);
+        }
+        .rating {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        .rating-high { background: rgba(40, 167, 69, 0.2); color: #155724; }
+        .rating-medium { background: rgba(255, 193, 7, 0.2); color: #856404; }
+        .rating-low { background: rgba(220, 53, 69, 0.2); color: #721c24; }
+        .empty-slot {
+            border: 2px dashed var(--secondary-color);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            color: var(--dark-color);
+            background-color: rgba(210, 180, 140, 0.1);
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        .btn-outline-danger {
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        .btn-outline-danger:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+        }
+        .breed-image {
+            width: 80px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid var(--secondary-color);
+            margin-bottom: 10px;
+        }
+        .progress {
+            height: 8px;
+            background-color: rgba(139, 69, 19, 0.1);
+        }
+        .progress-bar {
+            background-color: var(--primary-color);
+        }
+        .bg-success {
+            background-color: rgba(40, 167, 69, 0.2) !important;
+            color: #155724 !important;
+            border-color: rgba(40, 167, 69, 0.3) !important;
+        }
+        .bg-danger {
+            background-color: rgba(220, 53, 69, 0.2) !important;
+            color: #721c24 !important;
+            border-color: rgba(220, 53, 69, 0.3) !important;
+        }
+        .badge.bg-primary {
+            background-color: var(--primary-color) !important;
+        }
+        .badge.bg-info {
+            background-color: var(--secondary-color) !important;
+            color: var(--dark-color) !important;
+        }
+        .breed-card {
+            border: 1px solid var(--secondary-color);
+            background-color: var(--light-color);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .breed-card-img {
+            height: 380px;
+            object-fit: cover;
+            width: 100%;
+        }
+        .breed-image-small {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-light shadow-sm" style="background-color: var(--light-color);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html" style="color: var(--primary-color);">
+                <i class="fas fa-paw me-2"></i>AnimalBase
+            </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html" style="color: var(--dark-color);">Главная</a></li>
+                    <li class="nav-item"><a class="nav-link" href="catalog.html" style="color: var(--dark-color);">Каталог пород</a></li>
+                    <li class="nav-item"><a class="nav-link" href="filter.html" style="color: var(--dark-color);">Подбор породы</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="compare.html" style="color: var(--primary-color); font-weight: 500;">Сравнение</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 style="color: var(--dark-color);"><i class="fas fa-exchange-alt me-2" style="color: var(--primary-color);"></i>Сравнение пород</h1>
+            <button class="btn btn-outline-danger btn-sm" onclick="clearComparison()">
+                <i class="fas fa-trash me-1"></i>Очистить всё
+            </button>
+        </div>
+
+        <p class="lead mb-4" style="color: var(--dark-color);">Сравните характеристики выбранных пород, чтобы принять лучшее решение</p>
+
+        <!-- Информация о выбранных породах -->
+        <div class="row mb-4" id="selected-breeds-info">
+            <!-- Информация загрузится через JS -->
+        </div>
+
+        <!-- Таблица сравнения -->
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <div class="comparison-table">
+                    <table class="table table-bordered table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">Параметр</th>
+                                <!-- Заголовки пород загрузятся через JS -->
+                            </tr>
+                        </thead>
+                        <tbody id="comparison-table-body">
+                            <!-- Данные сравнения загрузятся через JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Подсказки -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card border-0" style="background-color: rgba(139, 69, 19, 0.05);">
+                    <div class="card-body">
+                        <h6 style="color: var(--dark-color);"><i class="fas fa-lightbulb me-2" style="color: var(--accent-color);"></i>Совет</h6>
+                        <p class="small mb-0" style="color: var(--dark-color);">Вы можете сравнивать до 3 пород одновременно. Для добавления пород перейдите в каталог.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0" style="background-color: rgba(139, 69, 19, 0.05);">
+                    <div class="card-body">
+                        <h6 style="color: var(--dark-color);"><i class="fas fa-chart-bar me-2" style="color: var(--primary-color);"></i>Оценка</h6>
+                        <p class="small mb-0" style="color: var(--dark-color);">Высокие значения выделены зеленым, средние - желтым, низкие - красным.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0" style="background-color: rgba(139, 69, 19, 0.05);">
+                    <div class="card-body">
+                        <h6 style="color: var(--dark-color);"><i class="fas fa-plus-circle me-2" style="color: var(--accent-color);"></i>Добавить</h6>
+                        <p class="small mb-0" style="color: var(--dark-color);">Хотите сравнить другие породы? <a href="catalog.html" style="color: var(--primary-color);">Перейти в каталог</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подвал -->
+    <footer class="py-4 mt-5" style="background-color: var(--dark-color); color: white;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-paw me-2"></i>AnimalBase</h5>
+                    <p>Инструмент сравнения пород домашних животных</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>Контакты: info@animalbase.ru</p>
+                    <p>© 2025 Все права защищены</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Полная база данных из 32 пород (взята из catalog.html)
+        const breedsData = [
+            // СОБАКИ (18 пород)
+            { 
+                id: 1, 
+                name: "Лабрадор-ретривер", 
+                type: "dog", 
+                size: "large", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                description: "Дружелюбная, энергичная семейная собака",
+                intelligence: 9,
+                friendliness: 10,
+                energy: 9,
+                trainability: 10,
+                shedding: 6,
+                barking: 4,
+                apartmentFriendly: 6,
+                weight: "25-36 кг",
+                lifespan: "10-12 лет",
+                image: "https://www.fendale.ch/_files/13138946_1739845976259461_7770631004785622437_n.jpg"
+            },
+            { 
+                id: 2, 
+                name: "Немецкая овчарка", 
+                type: "dog", 
+                size: "large", 
+                activity: "high",
+                careTime: "high",
+                goodWithKids: true,
+                goodWithPets: false,
+                hypoallergenic: false,
+                description: "Умная, преданная и смелая служебная порода",
+                intelligence: 10,
+                friendliness: 8,
+                energy: 9,
+                trainability: 10,
+                shedding: 8,
+                barking: 6,
+                apartmentFriendly: 4,
+                weight: "30-40 кг",
+                lifespan: "9-13 лет",
+                image: "https://images.petpress.net/wp-content/uploads/2020/05/german-shepherd-names-1.jpg?strip=all&lossy=1&ssl=1"
+            },
+            { 
+                id: 3, 
+                name: "Золотистый ретривер", 
+                type: "dog", 
+                size: "large", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                description: "Добродушная, терпеливая и очень дружелюбная собака",
+                intelligence: 8,
+                friendliness: 10,
+                energy: 9,
+                trainability: 9,
+                shedding: 7,
+                barking: 3,
+                apartmentFriendly: 5,
+                weight: "27-36 кг",
+                lifespan: "10-12 лет",
+                image: "https://petgid.ru/wp-content/uploads/2021/02/zolotistyj-retriver-1.jpg"
+            },
+            { 
+                id: 4, 
+                name: "Такса", 
+                type: "dog", 
+                size: "small", 
+                activity: "medium",
+                careTime: "low",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                description: "Энергичная, любопытная и храбрая охотничья собака",
+                intelligence: 7,
+                friendliness: 8,
+                energy: 7,
+                trainability: 6,
+                shedding: 4,
+                barking: 7,
+                apartmentFriendly: 9,
+                weight: "7-14 кг",
+                lifespan: "12-16 лет",
+                image: "https://breeds-info.ru/photo/taksa-standartnaya-g-sh-f3.jpg"
+            },
+            { 
+                id: 5, 
+                name: "Бигль", 
+                type: "dog", 
+                size: "medium", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                description: "Дружелюбная, веселая и очень общительная собака",
+                intelligence: 7,
+                friendliness: 9,
+                energy: 9,
+                trainability: 5,
+                shedding: 5,
+                barking: 8,
+                apartmentFriendly: 6,
+                weight: "10-11 кг",
+                lifespan: "12-15 лет",
+                image: "https://th.bing.com/th/id/R.54c477f26a6a67f9a0adb084699a0d65?rik=RNyHztGGQIaPOw&riu=http%3a%2f%2fmirsobak.net%2fwp-content%2fuploads%2fbigl-2.jpg&ehk=6fPJdaP8gRLRJpg8oDNkRZxL17wgeW1APQNP8K5N2xU%3d&risl=&pid=ImgRaw&r=0"
+            },
+            { 
+                id: 6, 
+                name: "Французский бульдог", 
+                type: "dog", 
+                size: "small", 
+                activity: "low",
+                careTime: "low",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                description: "Компактная собака-компаньон",
+                intelligence: 7,
+                friendliness: 9,
+                energy: 5,
+                trainability: 6,
+                shedding: 4,
+                barking: 3,
+                apartmentFriendly: 10,
+                weight: "8-14 кг",
+                lifespan: "10-12 лет",
+                image: "https://upload.chien.com/upload_global/61/81529-121277_full.jpg"
+            },
+            { 
+                id: 7, 
+                name: "Йоркширский терьер", 
+                type: "dog", 
+                size: "small", 
+                activity: "medium",
+                careTime: "medium",
+                goodWithKids: false,
+                goodWithPets: true,
+                hypoallergenic: true,
+                description: "Маленькая декоративная порода",
+                intelligence: 8,
+                friendliness: 7,
+                energy: 6,
+                trainability: 7,
+                shedding: 2,
+                barking: 6,
+                apartmentFriendly: 10,
+                weight: "2-3 кг",
+                lifespan: "13-16 лет",
+                image: "https://klike.net/uploads/posts/2019-06/1559543837_30.jpg"
+            },
+            { 
+                id: 8, 
+                name: "Пудель", 
+                type: "dog", 
+                size: "medium", 
+                activity: "high",
+                careTime: "high",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                description: "Умная и гипоаллергенная порода",
+                intelligence: 10,
+                friendliness: 9,
+                energy: 8,
+                trainability: 10,
+                shedding: 3,
+                barking: 5,
+                apartmentFriendly: 8,
+                weight: "20-32 кг",
+                lifespan: "12-15 лет",
+                image: "https://lapkins.ru/upload/iblock/6e5/6e52cb986e51a236498ecb062598d8a9.jpg"
+            },
+            { 
+                id: 9, 
+                name: "Сибирский хаски", 
+                type: "dog", 
+                size: "large", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                description: "Энергичная ездовая собака",
+                intelligence: 7,
+                friendliness: 9,
+                energy: 10,
+                trainability: 6,
+                shedding: 7,
+                barking: 4,
+                apartmentFriendly: 5,
+                weight: "20-27 кг",
+                lifespan: "12-14 лет",
+                image: "https://puplore.com/wp-content/uploads/Siberian-Husky-1-768x512.jpg"
+            },
+            { 
+                id: 10, 
+                name: "Ротвейлер", 
+                type: "dog", 
+                size: "large", 
+                activity: "medium",
+                careTime: "medium",
+                goodWithKids: false,
+                goodWithPets: false,
+                hypoallergenic: false,
+                description: "Сильная служебная порода",
+                intelligence: 9,
+                friendliness: 6,
+                energy: 7,
+                trainability: 8,
+                shedding: 5,
+                barking: 4,
+                apartmentFriendly: 5,
+                weight: "35-60 кг",
+                lifespan: "8-10 лет",
+                image: "https://s0.rbk.ru/v6_top_pics/media/img/7/24/347186385495247.webp"
+            },
+            { 
+                id: 11, 
+                name: "Чихуахуа", 
+                type: "dog", 
+                size: "small", 
+                activity: "low",
+                careTime: "low",
+                goodWithKids: false,
+                goodWithPets: false,
+                hypoallergenic: true,
+                description: "Самая маленькая порода собак",
+                intelligence: 7,
+                friendliness: 6,
+                energy: 5,
+                trainability: 5,
+                shedding: 3,
+                barking: 7,
+                apartmentFriendly: 10,
+                weight: "1-3 кг",
+                lifespan: "12-20 лет",
+                image: "https://tse3.mm.bing.net/th/id/OIP.ou_pPIbqjsN4C1zPu_JGmwHaEK?rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 12, 
+                name: "Джек рассел терьер", 
+                type: "dog", 
+                size: "small", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                description: "Энергичная охотничья собака",
+                intelligence: 8,
+                friendliness: 8,
+                energy: 10,
+                trainability: 7,
+                shedding: 4,
+                barking: 8,
+                apartmentFriendly: 6,
+                weight: "6-8 кг",
+                lifespan: "13-16 лет",
+                image: "https://th.bing.com/th/id/R.ab1732d1b64dd345983aaa80698c157c?rik=em04KkUDKxrYwQ&pid=ImgRaw&r=0"
+            },
+            { 
+                id: 13, 
+                name: "Боксер", 
+                type: "dog", 
+                size: "large", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: false,
+                hypoallergenic: false,
+                description: "Сильная, энергичная семейная собака",
+                intelligence: 8,
+                friendliness: 9,
+                energy: 9,
+                trainability: 7,
+                shedding: 5,
+                barking: 5,
+                apartmentFriendly: 6,
+                weight: "25-32 кг",
+                lifespan: "10-12 лет",
+                image: "https://bk-halle.de/fileadmin/_processed_/0/a/csm_dj_von_der_kleinen_hexe_5600156695.jpg"
+            },
+            { 
+                id: 14, 
+                name: "Шпиц", 
+                type: "dog", 
+                size: "small", 
+                activity: "medium",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                description: "Пушистая, дружелюбная порода",
+                intelligence: 7,
+                friendliness: 9,
+                energy: 7,
+                trainability: 6,
+                shedding: 7,
+                barking: 7,
+                apartmentFriendly: 9,
+                weight: "1.5-3 кг",
+                lifespan: "12-16 лет",
+                image: "https://awesomeworld.ru/wp-content/uploads/2017/10/shpic_6.jpg"
+            },
+            { 
+                id: 15, 
+                name: "Далматин", 
+                type: "dog", 
+                size: "large", 
+                activity: "high",
+                careTime: "low",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                description: "Элегантная, энергичная порода",
+                intelligence: 7,
+                friendliness: 8,
+                energy: 9,
+                trainability: 6,
+                shedding: 6,
+                barking: 5,
+                apartmentFriendly: 5,
+                weight: "27-32 кг",
+                lifespan: "10-13 лет",
+                image: "https://th.bing.com/th/id/R.e51ff7befcd3d13c463d81c4f2d9afec?rik=vzvEgaXEQXqk6Q&pid=ImgRaw&r=0"
+            },
+            { 
+                id: 16, 
+                name: "Колли", 
+                type: "dog", 
+                size: "large", 
+                activity: "high",
+                careTime: "high",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                description: "Умная пастушья собака",
+                intelligence: 9,
+                friendliness: 10,
+                energy: 8,
+                trainability: 9,
+                shedding: 8,
+                barking: 6,
+                apartmentFriendly: 5,
+                weight: "23-34 кг",
+                lifespan: "12-14 лет",
+                image: "https://tse3.mm.bing.net/th/id/OIP.4xB5bWicneEzVJbz74H73wHaE8?rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 17, 
+                name: "Мопс", 
+                type: "dog", 
+                size: "small", 
+                activity: "low",
+                careTime: "low",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                description: "Компактная, добродушная порода",
+                intelligence: 6,
+                friendliness: 9,
+                energy: 4,
+                trainability: 5,
+                shedding: 5,
+                barking: 3,
+                apartmentFriendly: 10,
+                weight: "6-8 кг",
+                lifespan: "13-15 лет",
+                image: "https://tse1.mm.bing.net/th/id/OIP.l0B1XzptyYDVpXhUQK4OXwAAAA?rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 18, 
+                name: "Сенбернар", 
+                type: "dog", 
+                size: "large", 
+                activity: "low",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                description: "Огромная собака-спасатель",
+                intelligence: 7,
+                friendliness: 10,
+                energy: 5,
+                trainability: 6,
+                shedding: 7,
+                barking: 3,
+                apartmentFriendly: 3,
+                weight: "65-120 кг",
+                lifespan: "8-10 лет",
+                image: "https://tse3.mm.bing.net/th/id/OIP.QtYU9NqJmkH_gnwE4ims5wHaGJ?w=1000&h=831&rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            
+            // КОШКИ (14 пород)
+            { 
+                id: 19, 
+                name: "Сиамская кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high",
+                careTime: "low",
+                goodWithKids: false,
+                goodWithPets: false,
+                hypoallergenic: true,
+                description: "Общительная, разговорчивая и преданная кошка",
+                intelligence: 9,
+                friendliness: 7,
+                energy: 9,
+                trainability: 8,
+                shedding: 3,
+                barking: 8,
+                apartmentFriendly: 9,
+                weight: "3-5 кг",
+                lifespan: "12-15 лет",
+                image: "https://petsi.net/images/catbreed/siamskaya.jpg"
+            },
+            { 
+                id: 20, 
+                name: "Мейн-кун", 
+                type: "cat", 
+                size: "large", 
+                activity: "medium",
+                careTime: "high",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                description: "Крупная, добродушная кошка с роскошной шерстью",
+                intelligence: 8,
+                friendliness: 9,
+                energy: 7,
+                trainability: 7,
+                shedding: 8,
+                barking: 3,
+                apartmentFriendly: 7,
+                weight: "5-8 кг",
+                lifespan: "12-15 лет",
+                image: "https://image.fonwall.ru/o/tc/cat-lies-maine-coon.jpg?auto=compress&fit=crop&w=1920&h=1080&domain=img3.fonwall.ru"
+            },
+            { 
+                id: 21, 
+                name: "Британская короткошёрстная", 
+                type: "cat", 
+                size: "medium", 
+                activity: "low",
+                careTime: "low",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                description: "Спокойная, независимая кошка с плюшевой шерстью",
+                intelligence: 7,
+                friendliness: 8,
+                energy: 5,
+                trainability: 5,
+                shedding: 5,
+                barking: 2,
+                apartmentFriendly: 10,
+                weight: "4-7 кг",
+                lifespan: "12-17 лет",
+                image: "https://s1.1zoom.ru/big0/460/British_Shorthair_Cats_Grass_Sitting_Ginger_color_600459_1280x853.jpg"
+            },
+            { 
+                id: 22, 
+                name: "Сфинкс", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high",
+                careTime: "high",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                description: "Энергичная бесшёрстная кошка",
+                intelligence: 8,
+                friendliness: 9,
+                energy: 9,
+                trainability: 7,
+                shedding: 1,
+                barking: 5,
+                apartmentFriendly: 8,
+                weight: "3.5-5.5 кг",
+                lifespan: "12-15 лет",
+                image: "https://www.kimballstock.com/pix/ani/p/02/cat-02-je0354-01p.jpg"
+            },
+            { 
+                id: 23, 
+                name: "Персидская кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "low",
+                careTime: "high",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                description: "Спокойная, роскошная кошка с длинной шерстью",
+                intelligence: 6,
+                friendliness: 8,
+                energy: 4,
+                trainability: 4,
+                shedding: 9,
+                barking: 2,
+                apartmentFriendly: 9,
+                weight: "3.5-7 кг",
+                lifespan: "12-17 лет",
+                image: "https://pipcat.ru/wp-content/uploads/2016/10/persidskij_kot_kot_pushistyj_serdityj_103850_2048x12801.jpg"
+            },
+            { 
+                id: 24, 
+                name: "Шотландская вислоухая", 
+                type: "cat", 
+                size: "medium", 
+                activity: "medium",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                description: "Добродушная вислоухая кошка",
+                intelligence: 7,
+                friendliness: 9,
+                energy: 6,
+                trainability: 6,
+                shedding: 5,
+                barking: 3,
+                apartmentFriendly: 9,
+                weight: "3-6 кг",
+                lifespan: "11-15 лет",
+                image: "https://www.min-petlife.com/data/article/25417/main_25417_68e3d_detail.jpg"
+            },
+            { 
+                id: 25, 
+                name: "Бенгальская кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: false,
+                goodWithPets: false,
+                hypoallergenic: true,
+                description: "Активная кошка с диким окрасом",
+                intelligence: 8,
+                friendliness: 6,
+                energy: 9,
+                trainability: 7,
+                shedding: 4,
+                barking: 6,
+                apartmentFriendly: 7,
+                weight: "4-7 кг",
+                lifespan: "12-16 лет",
+                image: "https://tse3.mm.bing.net/th/id/OIP.-Jv-c3pggsvia855oyoSiQHaEK?rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 26, 
+                name: "Абиссинская кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                description: "Энергичная и любопытная",
+                intelligence: 8,
+                friendliness: 8,
+                energy: 9,
+                trainability: 7,
+                shedding: 4,
+                barking: 5,
+                apartmentFriendly: 8,
+                weight: "3-5 кг",
+                lifespan: "12-15 лет",
+                image: "https://ikoshki.ru/wp-content/uploads/2023/06/abissinskaja-poroda-koshek-1-768x512.jpg"
+            },
+            { 
+                id: 27, 
+                name: "Русская голубая", 
+                type: "cat", 
+                size: "medium", 
+                activity: "medium",
+                careTime: "low",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                description: "Элегантная и сдержанная",
+                intelligence: 8,
+                friendliness: 7,
+                energy: 6,
+                trainability: 7,
+                shedding: 3,
+                barking: 3,
+                apartmentFriendly: 10,
+                weight: "3-5 кг",
+                lifespan: "15-20 лет",
+                image: "https://blue-fantasy.net/thumb/2/zCgaDpoaaNMo23QKtLmw1g/r/d/img_8081.jpg"
+            },
+            { 
+                id: 28, 
+                name: "Норвежская лесная", 
+                type: "cat", 
+                size: "large", 
+                activity: "medium",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                description: "Крупная, пушистая кошка",
+                intelligence: 7,
+                friendliness: 8,
+                energy: 7,
+                trainability: 6,
+                shedding: 7,
+                barking: 4,
+                apartmentFriendly: 7,
+                weight: "5-9 кг",
+                lifespan: "14-16 лет",
+                image: "https://tse1.mm.bing.net/th/id/OIP.U-dD4AIbEfv0vM39UsUFWwHaEo?w=768&h=480&rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 29, 
+                name: "Ориентальная кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high",
+                careTime: "low",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                description: "Элегантная, общительная и разговорчивая",
+                intelligence: 9,
+                friendliness: 9,
+                energy: 9,
+                trainability: 8,
+                shedding: 3,
+                barking: 8,
+                apartmentFriendly: 9,
+                weight: "3-5 кг",
+                lifespan: "12-15 лет",
+                image: "https://cat4you.ru/wp-content/uploads/0/e/f/0efc6e635266eb9bcd6974f2e3d81da5.jpeg"
+            },
+            { 
+                id: 30, 
+                name: "Рэгдолл", 
+                type: "cat", 
+                size: "large", 
+                activity: "low",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                description: "Спокойная кошка для семьи",
+                intelligence: 7,
+                friendliness: 10,
+                energy: 5,
+                trainability: 6,
+                shedding: 6,
+                barking: 3,
+                apartmentFriendly: 9,
+                weight: "5-9 кг",
+                lifespan: "12-15 лет",
+                image: "https://tse1.mm.bing.net/th/id/OIP.DG7nHHY5kJOsk_zKzX2c1AHaEW?w=626&h=368&rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 31, 
+                name: "Бурманская кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "medium",
+                careTime: "low",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                description: "Общительная, ласковая",
+                intelligence: 7,
+                friendliness: 9,
+                energy: 7,
+                trainability: 6,
+                shedding: 4,
+                barking: 5,
+                apartmentFriendly: 9,
+                weight: "4-6 кг",
+                lifespan: "12-16 лет",
+                image: "https://pichold.ru/wp-content/uploads/2018/11/s1200-6-3-1024x766.jpg"
+            },
+            { 
+                id: 32, 
+                name: "Турецкая ангора", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                description: "Элегантная, активная кошка",
+                intelligence: 8,
+                friendliness: 8,
+                energy: 8,
+                trainability: 7,
+                shedding: 5,
+                barking: 5,
+                apartmentFriendly: 8,
+                weight: "3-5 кг",
+                lifespan: "12-18 лет",
+                image: "https://avatars.dzeninfra.ru/get-zen_doc/271828/pub_6618c843d770996ce9bfb2e2_6618c878395afa08893654bd/scale_1200"
+            }
+        ];
+
+        // Получение списка для сравнения из localStorage
+        let comparisonList = JSON.parse(localStorage.getItem('comparisonList')) || [];
+
+        // Загрузка страницы сравнения
+        function loadComparisonPage() {
+            const breedsToCompare = breedsData.filter(breed => comparisonList.includes(breed.id));
+            
+            // Обновляем информацию о выбранных породах
+            updateSelectedBreedsInfo(breedsToCompare);
+            
+            // Обновляем таблицу сравнения
+            updateComparisonTable(breedsToCompare);
+        }
+
+        // Обновление информации о выбранных породах
+        function updateSelectedBreedsInfo(breeds) {
+            const container = document.getElementById('selected-breeds-info');
+            
+            if (breeds.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert" style="background-color: rgba(210, 180, 140, 0.2); border-color: var(--secondary-color); color: var(--dark-color);">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Вы не выбрали породы для сравнения. Перейдите в <a href="catalog.html" style="color: var(--primary-color);">каталог</a>, чтобы добавить породы.
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = breeds.map(breed => `
+                <div class="col-md-${12 / Math.max(breeds.length, 1)} mb-3">
+                    <div class="card breed-card h-100">
+                        <img src="${breed.image}" class="breed-card-img" alt="${breed.name}">
+                        <div class="card-body text-center">
+                            <h5 class="card-title" style="color: var(--dark-color);">${breed.name}</h5>
+                            <span class="badge ${breed.type === 'dog' ? 'bg-primary' : 'bg-info'} mb-2">
+                                ${breed.type === 'dog' ? 'Собака' : 'Кошка'}
+                            </span>
+                            <p class="card-text small" style="color: var(--dark-color);">${breed.description}</p>
+                            <button class="btn btn-sm btn-outline-danger" onclick="removeFromComparison(${breed.id})" style="border-color: var(--accent-color); color: var(--accent-color);">
+                                <i class="fas fa-times me-1"></i>Убрать
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Добавляем пустые слоты, если меньше 3 пород
+            if (breeds.length < 3) {
+                for (let i = breeds.length; i < 3; i++) {
+                    container.innerHTML += `
+                        <div class="col-md-${12 / 3} mb-3">
+                            <div class="card h-100 border-0">
+                                <div class="card-body empty-slot d-flex flex-column justify-content-center">
+                                    <i class="fas fa-plus-circle fa-2x mb-3" style="color: var(--secondary-color);"></i>
+                                    <p class="mb-0" style="color: var(--dark-color);">Добавить породу</p>
+                                    <a href="catalog.html" class="btn btn-sm btn-outline-primary mt-2">Перейти в каталог</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Обновление таблицы сравнения
+        function updateComparisonTable(breeds) {
+            const tableHead = document.querySelector('#comparison-table-body').parentNode.querySelector('thead tr');
+            const tableBody = document.getElementById('comparison-table-body');
+            
+            // Очищаем таблицу
+            tableHead.innerHTML = '<th scope="col">Параметр</th>';
+            tableBody.innerHTML = '';
+            
+            if (breeds.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center py-5">
+                            <i class="fas fa-exchange-alt fa-3x mb-3" style="color: var(--secondary-color);"></i>
+                            <h5 style="color: var(--dark-color);">Нет данных для сравнения</h5>
+                            <p style="color: var(--dark-color);">Выберите породы в <a href="catalog.html" style="color: var(--primary-color);">каталоге</a></p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Добавляем заголовки пород с фото
+            breeds.forEach(breed => {
+                tableHead.innerHTML += `
+                    <th class="breed-header">
+                        <img src="${breed.image}" class="breed-image-small" alt="${breed.name}">
+                        <div class="fw-bold" style="color: var(--dark-color);">${breed.name}</div>
+                        <small class="text-muted">${breed.type === 'dog' ? 'Собака' : 'Кошка'}</small>
+                    </th>
+                `;
+            });
+            
+            // Добавляем строки сравнения
+            const comparisonParameters = [
+                { key: 'description', label: 'Описание', type: 'text' },
+                { key: 'size', label: 'Размер', type: 'text' },
+                { key: 'activity', label: 'Активность', type: 'rating', map: { low: 'Низкая', medium: 'Средняя', high: 'Высокая' } },
+                { key: 'intelligence', label: 'Интеллект', type: 'number', max: 10 },
+                { key: 'friendliness', label: 'Дружелюбие', type: 'number', max: 10 },
+                { key: 'energy', label: 'Энергичность', type: 'number', max: 10 },
+                { key: 'trainability', label: 'Обучаемость', type: 'number', max: 10 },
+                { key: 'shedding', label: 'Линька', type: 'number', max: 10, reverse: true },
+                { key: 'apartmentFriendly', label: 'Подходит для квартиры', type: 'number', max: 10 },
+                { key: 'goodWithKids', label: 'Совместимость с детьми', type: 'boolean' },
+                { key: 'goodWithPets', label: 'Совместимость с животными', type: 'boolean' },
+                { key: 'hypoallergenic', label: 'Гипоаллергенность', type: 'boolean' },
+                { key: 'weight', label: 'Вес', type: 'text' },
+                { key: 'lifespan', label: 'Продолжительность жизни', type: 'text' }
+            ];
+            
+            comparisonParameters.forEach((param, index) => {
+                const row = document.createElement('tr');
+                if (index % 2 === 0) {
+                    row.classList.add('parameter-row');
+                }
+                
+                // Добавляем название параметра
+                row.innerHTML = `<th scope="row" style="color: var(--dark-color);">${param.label}</th>`;
+                
+                // Добавляем значения для каждой породы
+                breeds.forEach(breed => {
+                    const value = breed[param.key];
+                    let displayValue = '';
+                    
+                    if (param.type === 'rating' && param.map) {
+                        displayValue = param.map[value] || value;
+                        const ratingClass = value === 'high' ? 'rating-high' : value === 'medium' ? 'rating-medium' : 'rating-low';
+                        displayValue = `<span class="rating ${ratingClass}">${displayValue}</span>`;
+                    } 
+                    else if (param.type === 'number') {
+                        const percentage = (value / param.max) * 100;
+                        let colorClass = 'rating-low';
+                        if (percentage > 66) colorClass = 'rating-high';
+                        else if (percentage > 33) colorClass = 'rating-medium';
+                        
+                        displayValue = `
+                            <div class="d-flex align-items-center">
+                                <span class="rating ${colorClass} me-2">${value}/${param.max}</span>
+                                <div class="progress flex-grow-1">
+                                    <div class="progress-bar ${colorClass.replace('rating-', 'bg-')}" 
+                                         style="width: ${percentage}%"></div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    else if (param.type === 'boolean') {
+                        displayValue = value ? 
+                            '<span class="badge bg-success"><i class="fas fa-check me-1"></i>Да</span>' : 
+                            '<span class="badge bg-danger"><i class="fas fa-times me-1"></i>Нет</span>';
+                    }
+                    else if (param.key === 'size') {
+                        const sizeText = value === 'small' ? 'Маленький' : value === 'medium' ? 'Средний' : 'Крупный';
+                        displayValue = `<span style="color: var(--dark-color);">${sizeText}</span>`;
+                    }
+                    else {
+                        displayValue = value ? `<span style="color: var(--dark-color);">${value}</span>` : '—';
+                    }
+                    
+                    row.innerHTML += `<td>${displayValue}</td>`;
+                });
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Удаление породы из сравнения
+        function removeFromComparison(breedId) {
+            comparisonList = comparisonList.filter(id => id !== breedId);
+            localStorage.setItem('comparisonList', JSON.stringify(comparisonList));
+            loadComparisonPage();
+        }
+
+        // Очистка всего сравнения
+        function clearComparison() {
+            if (comparisonList.length > 0) {
+                if (confirm('Вы уверены, что хотите очистить список сравнения?')) {
+                    comparisonList = [];
+                    localStorage.setItem('comparisonList', JSON.stringify(comparisonList));
+                    loadComparisonPage();
+                }
+            }
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', loadComparisonPage);
+    </script>
+</body>
+</html>

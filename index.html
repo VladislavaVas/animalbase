@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>База знаний о породах животных</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #8B4513;
+            --secondary-color: #D2B48C;
+            --accent-color: #A0522D;
+            --light-color: #FAF3E0;
+            --dark-color: #5D4037;
+        }
+        
+        .hero-section {
+            background: linear-gradient(rgba(139, 69, 19, 0.3), rgba(90, 50, 30, 0.3)), 
+                        url('https://i.pinimg.com/1200x/42/9a/91/429a919deeeb79f9646b300b70143278.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 120px 0;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        .breed-card {
+            transition: transform 0.3s;
+            height: 100%;
+            border: 1px solid var(--secondary-color);
+            background-color: var(--light-color);
+        }
+        .breed-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(139, 69, 19, 0.15);
+        }
+        .breed-img {
+            height: 180px;
+            object-fit: cover;
+            width: 100%;
+        }
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        .btn-success {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        .btn-success:hover {
+            background-color: var(--dark-color);
+            border-color: var(--dark-color);
+        }
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+        .bg-light {
+            background-color: var(--light-color) !important;
+        }
+        .badge.bg-primary {
+            background-color: var(--primary-color) !important;
+        }
+        .badge.bg-info {
+            background-color: var(--secondary-color) !important;
+            color: var(--dark-color);
+        }
+        .popular-breed-img {
+            height: 120px;
+            object-fit: cover;
+            width: 100%;
+            border-bottom: 1px solid var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-light shadow-sm sticky-top" style="background-color: var(--light-color);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html" style="color: var(--primary-color);">
+                <i class="fas fa-paw me-2"></i>AnimalBase
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="index.html" style="color: var(--primary-color);">Главная</a></li>
+                    <li class="nav-item"><a class="nav-link" href="catalog.html" style="color: var(--dark-color);">Каталог пород</a></li>
+                    <li class="nav-item"><a class="nav-link" href="filter.html" style="color: var(--dark-color);">Подбор породы</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Герой-секция -->
+    <section class="hero-section text-center">
+        <div class="container">
+            <h1 class="display-4 fw-bold mb-4">Найдите идеального питомца</h1>
+            <p class="lead mb-4">База знаний о 30+ породах собак и кошек с подробными характеристиками и умным подбором</p>
+            <p class="mb-5">Изучайте породы, сравнивайте их характеристики и находите питомца, который идеально подойдет именно вам</p>
+        </div>
+    </section>
+
+    <!-- Основной контент -->
+    <div class="container py-5">
+        <!-- Кнопки действий -->
+        <div class="row mb-5">
+            <div class="col-md-6 text-center mb-3">
+                <a href="catalog.html" class="btn btn-primary btn-lg w-100 py-3 shadow-sm">
+                    <i class="fas fa-book me-2"></i>Перейти в каталог пород
+                </a>
+            </div>
+            <div class="col-md-6 text-center mb-3">
+                <a href="filter.html" class="btn btn-success btn-lg w-100 py-3 shadow-sm">
+                    <i class="fas fa-filter me-2"></i>Подобрать породу
+                </a>
+            </div>
+        </div>
+
+        <!-- Преимущества -->
+        <div class="row mb-5">
+            <div class="col-md-4 text-center mb-4">
+                <div class="feature-icon">
+                    <i class="fas fa-images"></i>
+                </div>
+                <h3>Фотографии пород</h3>
+                <p>Наглядные фотографии всех пород для лучшего представления</p>
+            </div>
+            <div class="col-md-4 text-center mb-4">
+                <div class="feature-icon">
+                    <i class="fas fa-sliders-h"></i>
+                </div>
+                <h3>Умный подбор</h3>
+                <p>Фильтрация пород по 10+ параметрам для идеального выбора</p>
+            </div>
+            <div class="col-md-4 text-center mb-4">
+                <div class="feature-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <h3>Сравнение пород</h3>
+                <p>Детальное сравнение характеристик разных пород в таблице</p>
+            </div>
+        </div>
+
+        <!-- Популярные породы -->
+        <h2 class="text-center mb-4" style="color: var(--dark-color);">Популярные породы</h2>
+        <div class="row" id="popular-breeds">
+            <!-- Породы загрузятся через JS -->
+        </div>
+    </div>
+
+    <!-- Подвал -->
+    <footer class="py-4" style="background-color: var(--dark-color); color: white;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-paw me-2"></i>AnimalBase</h5>
+                    <p>База знаний и подбор пород домашних животных</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>Контакты: info@animalbase.ru</p>
+                    <p>© 2025 Все права защищены</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Данные для главной страницы с ссылками на фотографии
+        // ВЫ МОЖЕТЕ ЗАМЕНИТЬ ЭТИ ССЫЛКИ НА СВОИ ФОТОГРАФИИ
+        const popularBreeds = [
+            { 
+                name: "Лабрадор-ретривер", 
+                type: "Собака", 
+                description: "Дружелюбная семейная собака", 
+                color: "primary",
+                image: "https://www.fendale.ch/_files/13138946_1739845976259461_7770631004785622437_n.jpg"
+            },
+            { 
+                name: "Сиамская кошка", 
+                type: "Кошка", 
+                description: "Общительная и голосистая", 
+                color: "info",
+                image: "https://petsi.net/images/catbreed/siamskaya.jpg"
+            },
+            { 
+                name: "Немецкая овчарка", 
+                type: "Собака", 
+                description: "Умная и преданная", 
+                color: "primary",
+                image: "https://images.petpress.net/wp-content/uploads/2020/05/german-shepherd-names-1.jpg?strip=all&lossy=1&ssl=1"
+            },
+            { 
+                name: "Мейн-кун", 
+                type: "Кошка", 
+                description: "Крупная и добродушная", 
+                color: "info",
+                image: "https://image.fonwall.ru/o/tc/cat-lies-maine-coon.jpg?auto=compress&fit=crop&w=1920&h=1080&domain=img3.fonwall.ru"
+            },
+            { 
+                name: "Британская кошка", 
+                type: "Кошка", 
+                description: "Спокойная и независимая", 
+                color: "info",
+                image: "https://s1.1zoom.ru/big0/460/British_Shorthair_Cats_Grass_Sitting_Ginger_color_600459_1280x853.jpg"
+            },
+            { 
+                name: "Золотистый ретривер", 
+                type: "Собака", 
+                description: "Добродушная и терпеливая", 
+                color: "primary",
+                image: "https://petgid.ru/wp-content/uploads/2021/02/zolotistyj-retriver-1.jpg"
+            }
+        ];
+
+        // Отображение популярных пород
+        function displayPopularBreeds() {
+            const container = document.getElementById('popular-breeds');
+            container.innerHTML = popularBreeds.map(breed => `
+                <div class="col-md-4 col-lg-2 mb-4">
+                    <div class="card breed-card h-100">
+                        <img src="${breed.image}" class="popular-breed-img" alt="${breed.name}">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">${breed.name}</h5>
+                            <span class="badge ${breed.color === 'primary' ? 'bg-primary' : 'bg-info'} mb-3">${breed.type}</span>
+                            <p class="card-text small">${breed.description}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Запуск при загрузке
+        document.addEventListener('DOMContentLoaded', displayPopularBreeds);
+    </script>
+</body>
+</html>

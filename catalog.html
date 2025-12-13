@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог пород - AnimalBase</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #8B4513;
+            --secondary-color: #D2B48C;
+            --accent-color: #A0522D;
+            --light-color: #FAF3E0;
+            --dark-color: #5D4037;
+        }
+        
+        .breed-card {
+            transition: all 0.3s;
+            height: 100%;
+            border: 1px solid var(--secondary-color);
+            background-color: var(--light-color);
+        }
+        .breed-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(139, 69, 19, 0.15);
+        }
+        .breed-img {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+        .badge-dog { 
+            background-color: var(--primary-color) !important; 
+            color: white !important;
+        }
+        .badge-cat { 
+            background-color: var(--secondary-color) !important; 
+            color: var(--dark-color) !important;
+        }
+        .filter-badge {
+            cursor: pointer;
+            margin: 3px;
+            padding: 8px 15px !important;
+            border-radius: 20px !important;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 2px solid var(--primary-color) !important;
+            background-color: white !important;
+            color: var(--primary-color) !important;
+        }
+        .filter-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(139, 69, 19, 0.1);
+            background-color: rgba(139, 69, 19, 0.05) !important;
+        }
+        .filter-badge.active {
+            background-color: var(--primary-color) !important;
+            color: white !important;
+            border-color: var(--primary-color) !important;
+        }
+        .comparison-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: none;
+            background-color: var(--light-color);
+            border-top: 2px solid var(--secondary-color);
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-light shadow-sm" style="background-color: var(--light-color);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html" style="color: var(--primary-color);">
+                <i class="fas fa-paw me-2"></i>AnimalBase
+            </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html" style="color: var(--dark-color);">Главная</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="catalog.html" style="color: var(--primary-color); font-weight: 500;">Каталог пород</a></li>
+                    <li class="nav-item"><a class="nav-link" href="filter.html" style="color: var(--dark-color);">Подбор породы</a></li>
+                </ul>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="me-3" style="color: var(--dark-color);" id="comparison-count">0 пород для сравнения</span>
+                <button class="btn btn-outline-primary btn-sm" id="compare-button" onclick="goToComparison()" disabled>
+                    <i class="fas fa-exchange-alt me-1"></i>Сравнить
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Панель сравнения (скрыта пока) -->
+    <div class="comparison-bar" id="comparison-bar">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span id="comparison-text" style="color: var(--dark-color);">Выбрано 0 пород для сравнения</span>
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary me-2" onclick="clearComparison()" style="border-color: var(--secondary-color); color: var(--dark-color);">Очистить</button>
+                    <button class="btn btn-sm btn-primary" onclick="goToComparison()">Перейти к сравнению</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-4">
+        <!-- Заголовок и поиск -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="h2" style="color: var(--dark-color);">Каталог пород</h1>
+                <p class="text-muted">Изучите подробную информацию о 30+ породах собак и кошек с фотографиями</p>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group shadow-sm">
+                    <input type="text" class="form-control" placeholder="Поиск породы..." id="search-input" style="border-color: var(--secondary-color);">
+                    <button class="btn btn-primary" onclick="searchBreeds()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Фильтры -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h6 class="mb-3" style="color: var(--dark-color);">Фильтры:</h6>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <span class="badge filter-badge active" onclick="filterByType('all')">Все породы</span>
+                    <span class="badge filter-badge" onclick="filterByType('dog')"><i class="fas fa-dog me-1"></i>Собаки</span>
+                    <span class="badge filter-badge" onclick="filterByType('cat')"><i class="fas fa-cat me-1"></i>Кошки</span>
+                    <span class="badge filter-badge" onclick="filterBySize('small')"><i class="fas fa-search-minus me-1"></i>Маленькие</span>
+                    <span class="badge filter-badge" onclick="filterBySize('medium')"><i class="fas fa-search me-1"></i>Средние</span>
+                    <span class="badge filter-badge" onclick="filterBySize('large')"><i class="fas fa-search-plus me-1"></i>Крупные</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Сетка пород -->
+        <div class="row" id="breeds-container">
+            <!-- Породы загрузятся через JS -->
+        </div>
+    </div>
+
+    <!-- Подвал -->
+    <footer class="py-4 mt-5" style="background-color: var(--dark-color); color: white;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-paw me-2"></i>AnimalBase</h5>
+                    <p>База знаний о домашних животных с фотографиями</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>Контакты: info@animalbase.ru</p>
+                    <p>© 2025 Все права защищены</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Расширенная база данных пород (30+ пород) С ССЫЛКАМИ НА ФОТОГРАФИИ
+        const allBreeds = [
+            // СОБАКИ (18 пород)
+            { 
+                id: 1, 
+                name: "Лабрадор-ретривер", 
+                type: "dog", 
+                size: "large", 
+                activity: "high", 
+                description: "Дружелюбная, энергичная семейная собака",
+                characteristics: ["Дружелюбный", "Умный", "Активный", "Хорошо ладит с детьми"],
+                image: "https://www.fendale.ch/_files/13138946_1739845976259461_7770631004785622437_n.jpg"
+            },
+            { 
+                id: 2, 
+                name: "Немецкая овчарка", 
+                type: "dog", 
+                size: "large", 
+                activity: "high", 
+                description: "Умная, преданная и смелая служебная порода",
+                characteristics: ["Умная", "Преданная", "Смелая", "Работоспособная"],
+                image: "https://images.petpress.net/wp-content/uploads/2020/05/german-shepherd-names-1.jpg?strip=all&lossy=1&ssl=1"
+            },
+            { 
+                id: 3, 
+                name: "Золотистый ретривер", 
+                type: "dog", 
+                size: "large", 
+                activity: "high", 
+                description: "Добродушная, терпеливая и очень дружелюбная собака",
+                characteristics: ["Добродушная", "Терпеливая", "Умная", "Послушная"],
+                image: "https://petgid.ru/wp-content/uploads/2021/02/zolotistyj-retriver-1.jpg"
+            },
+            { 
+                id: 4, 
+                name: "Такса", 
+                type: "dog", 
+                size: "small", 
+                activity: "medium", 
+                description: "Энергичная, любопытная и храбрая охотничья собака",
+                characteristics: ["Энергичная", "Любопытная", "Храбрая", "Упрямая"],
+                image: "https://breeds-info.ru/photo/taksa-standartnaya-g-sh-f3.jpg"
+            },
+            { 
+                id: 5, 
+                name: "Бигль", 
+                type: "dog", 
+                size: "medium", 
+                activity: "high", 
+                description: "Дружелюбная, веселая и очень общительная собака",
+                characteristics: ["Дружелюбная", "Общительная", "Энергичная", "Упрямая"],
+                image: "https://th.bing.com/th/id/R.54c477f26a6a67f9a0adb084699a0d65?rik=RNyHztGGQIaPOw&riu=http%3a%2f%2fmirsobak.net%2fwp-content%2fuploads%2fbigl-2.jpg&ehk=6fPJdaP8gRLRJpg8oDNkRZxL17wgeW1APQNP8K5N2xU%3d&risl=&pid=ImgRaw&r=0"
+            },
+            { 
+                id: 6, 
+                name: "Французский бульдог", 
+                type: "dog", 
+                size: "small", 
+                activity: "low", 
+                description: "Компактная, дружелюбная и спокойная собака-компаньон",
+                characteristics: ["Дружелюбная", "Спокойная", "Компактная", "Хороший компаньон"],
+                image: "https://upload.chien.com/upload_global/61/81529-121277_full.jpg"
+            },
+            { 
+                id: 7, 
+                name: "Йоркширский терьер", 
+                type: "dog", 
+                size: "small", 
+                activity: "medium", 
+                description: "Маленькая, энергичная и смелая декоративная порода",
+                characteristics: ["Энергичная", "Смелая", "Декоративная", "Преданная"],
+                image: "https://klike.net/uploads/posts/2019-06/1559543837_30.jpg"
+            },
+            { 
+                id: 8, 
+                name: "Пудель", 
+                type: "dog", 
+                size: "medium", 
+                activity: "high", 
+                description: "Умная, активная и гипоаллергенная порода",
+                characteristics: ["Умная", "Активная", "Гипоаллергенная", "Хорошо обучаемая"],
+                image: "https://lapkins.ru/upload/iblock/6e5/6e52cb986e51a236498ecb062598d8a9.jpg"
+            },
+            { 
+                id: 9, 
+                name: "Сибирский хаски", 
+                type: "dog", 
+                size: "large", 
+                activity: "high", 
+                description: "Энергичная, дружелюбная и независимая ездовая собака",
+                characteristics: ["Энергичная", "Дружелюбная", "Независимая", "Голубые глаза"],
+                image: "https://puplore.com/wp-content/uploads/Siberian-Husky-1-768x512.jpg"
+            },
+            { 
+                id: 10, 
+                name: "Ротвейлер", 
+                type: "dog", 
+                size: "large", 
+                activity: "medium", 
+                description: "Сильная, уверенная и преданная служебная порода",
+                characteristics: ["Сильная", "Уверенная", "Преданная", "Защитник"],
+                image: "https://s0.rbk.ru/v6_top_pics/media/img/7/24/347186385495247.webp"
+            },
+            { 
+                id: 11, 
+                name: "Чихуахуа", 
+                type: "dog", 
+                size: "small", 
+                activity: "low", 
+                description: "Самая маленькая порода собак, смелая и преданная",
+                characteristics: ["Маленькая", "Смелая", "Преданная", "Долгожитель"],
+                image: "https://tse3.mm.bing.net/th/id/OIP.ou_pPIbqjsN4C1zPu_JGmwHaEK?rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 12, 
+                name: "Джек рассел терьер", 
+                type: "dog", 
+                size: "small", 
+                activity: "high", 
+                description: "Энергичная, умная и очень активная охотничья собака",
+                characteristics: ["Энергичная", "Умная", "Активная", "Охотничья"],
+                image: "https://th.bing.com/th/id/R.ab1732d1b64dd345983aaa80698c157c?rik=em04KkUDKxrYwQ&pid=ImgRaw&r=0"
+            },
+            { 
+                id: 13, 
+                name: "Боксер", 
+                type: "dog", 
+                size: "large", 
+                activity: "high", 
+                description: "Сильная, энергичная и игривая семейная собака",
+                characteristics: ["Сильная", "Энергичная", "Игривая", "Хорошо ладит с детьми"],
+                image: "https://bk-halle.de/fileadmin/_processed_/0/a/csm_dj_von_der_kleinen_hexe_5600156695.jpg"
+            },
+            { 
+                id: 14, 
+                name: "Шпиц", 
+                type: "dog", 
+                size: "small", 
+                activity: "medium", 
+                description: "Пушистая, дружелюбная и очень преданная порода",
+                characteristics: ["Пушистая", "Дружелюбная", "Преданная", "Компаньон"],
+                image: "https://awesomeworld.ru/wp-content/uploads/2017/10/shpic_6.jpg"
+            },
+            { 
+                id: 15, 
+                name: "Далматин", 
+                type: "dog", 
+                size: "large", 
+                activity: "high", 
+                description: "Элегантная, энергичная и очень активная порода",
+                characteristics: ["Элегантная", "Энергичная", "Активная", "Пятнистая"],
+                image: "https://th.bing.com/th/id/R.e51ff7befcd3d13c463d81c4f2d9afec?rik=vzvEgaXEQXqk6Q&pid=ImgRaw&r=0"
+            },
+            { 
+                id: 16, 
+                name: "Колли", 
+                type: "dog", 
+                size: "large", 
+                activity: "high", 
+                description: "Умная, нежная и очень преданная пастушья собака",
+                characteristics: ["Умная", "Нежная", "Преданная", "Пастушья"],
+                image: "https://tse3.mm.bing.net/th/id/OIP.4xB5bWicneEzVJbz74H73wHaE8?rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 17, 
+                name: "Мопс", 
+                type: "dog", 
+                size: "small", 
+                activity: "low", 
+                description: "Компактная, добродушная и очень спокойная порода",
+                characteristics: ["Компактная", "Добродушная", "Спокойная", "Компаньон"],
+                image: "https://tse1.mm.bing.net/th/id/OIP.l0B1XzptyYDVpXhUQK4OXwAAAA?rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 18, 
+                name: "Сенбернар", 
+                type: "dog", 
+                size: "large", 
+                activity: "low", 
+                description: "Огромная, добродушная и очень терпеливая собака-спасатель",
+                characteristics: ["Крупная", "Добродушная", "Терпеливая", "Спасатель"],
+                image: "https://tse3.mm.bing.net/th/id/OIP.QtYU9NqJmkH_gnwE4ims5wHaGJ?w=1000&h=831&rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            
+            // КОШКИ (14 пород)
+            { 
+                id: 19, 
+                name: "Сиамская кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high", 
+                description: "Общительная, разговорчивая и преданная кошка",
+                characteristics: ["Общительная", "Голосистая", "Энергичная", "Умная"],
+                image: "https://petsi.net/images/catbreed/siamskaya.jpg"
+            },
+            { 
+                id: 20, 
+                name: "Мейн-кун", 
+                type: "cat", 
+                size: "large", 
+                activity: "medium", 
+                description: "Крупная, добродушная кошка с роскошной шерстью",
+                characteristics: ["Крупная", "Добродушная", "Игривая", "Общительная"],
+                image: "https://image.fonwall.ru/o/tc/cat-lies-maine-coon.jpg?auto=compress&fit=crop&w=1920&h=1080&domain=img3.fonwall.ru"
+            },
+            { 
+                id: 21, 
+                name: "Британская короткошёрстная", 
+                type: "cat", 
+                size: "medium", 
+                activity: "low", 
+                description: "Спокойная, независимая кошка с плюшевой шерстью",
+                characteristics: ["Спокойная", "Независимая", "Добродушная", "Чистоплотная"],
+                image: "https://s1.1zoom.ru/big0/460/British_Shorthair_Cats_Grass_Sitting_Ginger_color_600459_1280x853.jpg"
+            },
+            { 
+                id: 22, 
+                name: "Сфинкс", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high", 
+                description: "Энергичная бесшёрстная кошка, очень привязанная к хозяину",
+                characteristics: ["Энергичная", "Общительная", "Любопытная", "Теплолюбивая"],
+                image: "https://www.kimballstock.com/pix/ani/p/02/cat-02-je0354-01p.jpg"
+            },
+            { 
+                id: 23, 
+                name: "Персидская кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "low", 
+                description: "Спокойная, роскошная кошка с длинной шелковистой шерстью",
+                characteristics: ["Спокойная", "Роскошная", "Нежная", "Домашняя"],
+                image: "https://pipcat.ru/wp-content/uploads/2016/10/persidskij_kot_kot_pushistyj_serdityj_103850_2048x12801.jpg"
+            },
+            { 
+                id: 24, 
+                name: "Шотландская вислоухая", 
+                type: "cat", 
+                size: "medium", 
+                activity: "medium", 
+                description: "Добродушная кошка с уникальными загнутыми ушами",
+                characteristics: ["Добродушная", "Игривая", "Общительная", "Вислоухая"],
+                image: "https://www.min-petlife.com/data/article/25417/main_25417_68e3d_detail.jpg"
+            },
+            { 
+                id: 25, 
+                name: "Бенгальская кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high", 
+                description: "Активная, игривая кошка с диким окрасом",
+                characteristics: ["Активная", "Игривая", "Дикий окрас", "Энергичная"],
+                image: "https://tse3.mm.bing.net/th/id/OIP.-Jv-c3pggsvia855oyoSiQHaEK?rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 26, 
+                name: "Абиссинская кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high", 
+                description: "Энергичная, любопытная и очень активная порода",
+                characteristics: ["Энергичная", "Любопытная", "Активная", "Игривая"],
+                image: "https://ikoshki.ru/wp-content/uploads/2023/06/abissinskaja-poroda-koshek-1-768x512.jpg"
+            },
+            { 
+                id: 27, 
+                name: "Русская голубая", 
+                type: "cat", 
+                size: "medium", 
+                activity: "medium", 
+                description: "Элегантная, сдержанная и очень умная кошка",
+                characteristics: ["Элегантная", "Сдержанная", "Умная", "Гипоаллергенная"],
+                image: "https://blue-fantasy.net/thumb/2/zCgaDpoaaNMo23QKtLmw1g/r/d/img_8081.jpg"
+            },
+            { 
+                id: 28, 
+                name: "Норвежская лесная", 
+                type: "cat", 
+                size: "large", 
+                activity: "medium", 
+                description: "Крупная, пушистая кошка с дикой внешностью",
+                characteristics: ["Крупная", "Пушистая", "Дикая внешность", "Независимая"],
+                image: "https://tse1.mm.bing.net/th/id/OIP.U-dD4AIbEfv0vM39UsUFWwHaEo?w=768&h=480&rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 29, 
+                name: "Ориентальная кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high", 
+                description: "Элегантная, общительная и очень разговорчивая порода",
+                characteristics: ["Элегантная", "Общительная", "Разговорчивая", "Активная"],
+                image: "https://cat4you.ru/wp-content/uploads/0/e/f/0efc6e635266eb9bcd6974f2e3d81da5.jpeg"
+            },
+            { 
+                id: 30, 
+                name: "Рэгдолл", 
+                type: "cat", 
+                size: "large", 
+                activity: "low", 
+                description: "Крупная, спокойная кошка, которая расслабляется на руках",
+                characteristics: ["Крупная", "Спокойная", "Ласковая", "Расслабленная"],
+                image: "https://tse1.mm.bing.net/th/id/OIP.DG7nHHY5kJOsk_zKzX2c1AHaEW?w=626&h=368&rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 31, 
+                name: "Бурманская кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "medium", 
+                description: "Общительная, ласковая и очень ориентированная на человека",
+                characteristics: ["Общительная", "Ласковая", "Ориентированная на человека", "Игривая"],
+                image: "https://pichold.ru/wp-content/uploads/2018/11/s1200-6-3-1024x766.jpg"
+            },
+            { 
+                id: 32, 
+                name: "Турецкая ангора", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high", 
+                description: "Элегантная, активная кошка с роскошной белой шерстью",
+                characteristics: ["Элегантная", "Активная", "Роскошная шерсть", "Игривая"],
+                image: "https://avatars.dzeninfra.ru/get-zen_doc/271828/pub_6618c843d770996ce9bfb2e2_6618c878395afa08893654bd/scale_1200"
+            }
+        ];
+
+        let currentBreeds = [...allBreeds];
+        let comparisonList = JSON.parse(localStorage.getItem('comparisonList')) || [];
+
+        // Отображение пород
+        function displayBreeds(breeds) {
+            const container = document.getElementById('breeds-container');
+            if (breeds.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-search fa-3x mb-3" style="color: var(--secondary-color);"></i>
+                        <h4 style="color: var(--dark-color);">Породы не найдены</h4>
+                        <p class="text-muted">Попробуйте изменить параметры поиска</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = breeds.map(breed => {
+                const isCompared = comparisonList.includes(breed.id);
+                return `
+                <div class="col-md-4 col-lg-3 mb-4">
+                    <div class="card breed-card h-100">
+                        <img src="${breed.image}" class="breed-img" alt="${breed.name}">
+                        <div class="card-body">
+                            <h5 class="card-title">${breed.name}</h5>
+                            <span class="badge ${breed.type === 'dog' ? 'badge-dog' : 'badge-cat'}">
+                                ${breed.type === 'dog' ? '<i class="fas fa-dog me-1"></i>Собака' : '<i class="fas fa-cat me-1"></i>Кошка'}
+                            </span>
+                            <span class="badge ms-1" style="background-color: var(--secondary-color); color: var(--dark-color);">
+                                ${breed.size === 'small' ? 'Маленький' : breed.size === 'medium' ? 'Средний' : 'Крупный'}
+                            </span>
+                            <p class="card-text mt-2 small">${breed.description}</p>
+                            <div class="mt-3">
+                                ${breed.characteristics.map(char => 
+                                    `<span class="badge me-1 mb-1" style="background-color: rgba(139, 69, 19, 0.1); color: var(--dark-color); border: 1px solid var(--secondary-color);">${char}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-0">
+                            <button class="btn btn-sm ${isCompared ? 'btn-primary' : 'btn-outline-primary'} w-100" 
+                                    onclick="toggleComparison(${breed.id}, '${breed.name}')">
+                                <i class="fas ${isCompared ? 'fa-check' : 'fa-exchange-alt'} me-1"></i>
+                                ${isCompared ? 'В сравнении' : 'Сравнить'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // Поиск пород
+        function searchBreeds() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            currentBreeds = allBreeds.filter(breed => 
+                breed.name.toLowerCase().includes(query) || 
+                breed.description.toLowerCase().includes(query)
+            );
+            
+            // Сброс активных фильтров при поиске
+            document.querySelectorAll('.filter-badge').forEach(badge => {
+                badge.classList.remove('active');
+            });
+            document.querySelector('.filter-badge[onclick*="filterByType(\'all\')"]').classList.add('active');
+            
+            displayBreeds(currentBreeds);
+        }
+
+        // Фильтрация по типу
+        function filterByType(type) {
+            if (type === 'all') {
+                currentBreeds = [...allBreeds];
+            } else {
+                currentBreeds = allBreeds.filter(breed => breed.type === type);
+            }
+            document.getElementById('search-input').value = '';
+            
+            // Обновляем активные фильтры
+            document.querySelectorAll('.filter-badge').forEach(badge => {
+                badge.classList.remove('active');
+            });
+            
+            // Активируем выбранный фильтр
+            if (type === 'all') {
+                document.querySelector('.filter-badge[onclick*="filterByType(\'all\')"]').classList.add('active');
+            } else if (type === 'dog') {
+                document.querySelector('.filter-badge[onclick*="filterByType(\'dog\')"]').classList.add('active');
+            } else if (type === 'cat') {
+                document.querySelector('.filter-badge[onclick*="filterByType(\'cat\')"]').classList.add('active');
+            }
+            
+            displayBreeds(currentBreeds);
+        }
+
+        // Фильтрация по размеру
+        function filterBySize(size) {
+            currentBreeds = allBreeds.filter(breed => breed.size === size);
+            
+            // Обновляем активные фильтры
+            document.querySelectorAll('.filter-badge').forEach(badge => {
+                badge.classList.remove('active');
+            });
+            
+            // Активируем выбранный фильтр размера
+            if (size === 'small') {
+                document.querySelector('.filter-badge[onclick*="filterBySize(\'small\')"]').classList.add('active');
+            } else if (size === 'medium') {
+                document.querySelector('.filter-badge[onclick*="filterBySize(\'medium\')"]').classList.add('active');
+            } else if (size === 'large') {
+                document.querySelector('.filter-badge[onclick*="filterBySize(\'large\')"]').classList.add('active');
+            }
+            
+            displayBreeds(currentBreeds);
+        }
+
+        // Управление сравнением
+        function toggleComparison(breedId, breedName) {
+            const index = comparisonList.indexOf(breedId);
+            if (index === -1) {
+                if (comparisonList.length >= 3) {
+                    alert('Можно сравнивать не более 3 пород одновременно');
+                    return;
+                }
+                comparisonList.push(breedId);
+            } else {
+                comparisonList.splice(index, 1);
+            }
+            
+            localStorage.setItem('comparisonList', JSON.stringify(comparisonList));
+            updateComparisonUI();
+            displayBreeds(currentBreeds);
+        }
+
+        function updateComparisonUI() {
+            const count = comparisonList.length;
+            const compareButton = document.getElementById('compare-button');
+
+            document.getElementById('comparison-count').textContent = `${count} пород для сравнения`;
+            document.getElementById('comparison-text').textContent = `Выбрано ${count} пород для сравнения`;
+            
+            compareButton.disabled = count === 0;
+            compareButton.classList.toggle('btn-outline-primary', count === 0);
+            compareButton.classList.toggle('btn-primary', count > 0);
+
+            const bar = document.getElementById('comparison-bar');
+            bar.style.display = count > 0 ? 'block' : 'none';
+        }
+
+        function clearComparison() {
+            comparisonList = [];
+            localStorage.setItem('comparisonList', JSON.stringify(comparisonList));
+            updateComparisonUI();
+            displayBreeds(currentBreeds);
+        }
+
+        function goToComparison() {
+            if (comparisonList.length > 0) {
+                window.location.href = 'compare.html';
+            } else {
+                alert('Выберите породы для сравнения (максимум 3)');
+            }
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            displayBreeds(allBreeds);
+            updateComparisonUI();
+            
+            // Поиск при нажатии Enter
+            document.getElementById('search-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') searchBreeds();
+            });
+        });
+    </script>
+</body>
+</html>

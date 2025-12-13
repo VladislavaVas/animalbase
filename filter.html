@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подбор породы - AnimalBase</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #8B4513;
+            --secondary-color: #D2B48C;
+            --accent-color: #A0522D;
+            --light-color: #FAF3E0;
+            --dark-color: #5D4037;
+        }
+        
+        .filter-section {
+            background: var(--light-color);
+            border-radius: 15px;
+            padding: 25px;
+            height: 100%;
+            border: 1px solid var(--secondary-color);
+            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.08);
+        }
+        .slider-container {
+            margin: 20px 0;
+        }
+        .slider-value {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .result-card {
+            transition: all 0.3s;
+            height: 100%;
+            border: 1px solid var(--secondary-color);
+            background-color: var(--light-color);
+        }
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(139, 69, 19, 0.15);
+        }
+        .match-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 2;
+        }
+        .progress {
+            height: 10px;
+            margin-top: 5px;
+            background-color: rgba(139, 69, 19, 0.1);
+        }
+        .progress-bar {
+            background-color: var(--primary-color);
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+        .btn-outline-secondary {
+            border-color: var(--secondary-color);
+            color: var(--dark-color);
+        }
+        .btn-outline-secondary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            color: var(--dark-color);
+        }
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .form-range::-webkit-slider-thumb {
+            background-color: var(--primary-color);
+        }
+        .form-range::-moz-range-thumb {
+            background-color: var(--primary-color);
+        }
+        .breed-image {
+            height: 150px;
+            object-fit: cover;
+            width: 100%;
+            border-radius: 8px 8px 0 0;
+        }
+        .btn-group .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-group .btn-outline-primary:hover {
+            background-color: rgba(139, 69, 19, 0.1);
+        }
+        .btn-group .btn-outline-primary.active,
+        .btn-group .btn-outline-primary:active,
+        .btn-group .btn-outline-primary:focus {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            color: white !important;
+            box-shadow: 0 0 0 0.25rem rgba(139, 69, 19, 0.25) !important;
+        }
+        
+        .btn-group .btn-outline-secondary {
+            color: var(--dark-color);
+            border-color: var(--primary-color);
+        }
+        .btn-group .btn-outline-secondary:hover {
+            background-color: rgba(139, 69, 19, 0.1);
+        }
+        .btn-group .btn-outline-secondary.active,
+        .btn-group .btn-outline-secondary:active,
+        .btn-group .btn-outline-secondary:focus {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            color: white !important;
+            box-shadow: 0 0 0 0.25rem rgba(139, 69, 19, 0.25) !important;
+        }
+        .card-img-container {
+            height: 250px;
+            overflow: hidden;
+            position: relative;
+        }
+        .card-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-light shadow-sm" style="background-color: var(--light-color);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html" style="color: var(--primary-color);">
+                <i class="fas fa-paw me-2"></i>AnimalBase
+            </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html" style="color: var(--dark-color);">Главная</a></li>
+                    <li class="nav-item"><a class="nav-link" href="catalog.html" style="color: var(--dark-color);">Каталог пород</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="filter.html" style="color: var(--primary-color); font-weight: 500;">Подбор породы</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <h1 class="mb-4" style="color: var(--dark-color);">Умный подбор породы</h1>
+        <p class="lead mb-5" style="color: var(--dark-color);">Ответьте на несколько вопросов, и мы подберём породу, идеально подходящую вашему образу жизни</p>
+
+        <div class="row">
+            <!-- Левая колонка - фильтры -->
+            <div class="col-lg-4 mb-4">
+                <div class="filter-section">
+                    <h4 class="mb-4" style="color: var(--dark-color);"><i class="fas fa-sliders-h me-2"></i>Параметры подбора</h4>
+
+                    <!-- Тип животного -->
+                    <div class="mb-4">
+                        <h5 style="color: var(--dark-color);">Вид животного</h5>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="animalType" id="all" autocomplete="off" checked>
+                            <label class="btn btn-outline-primary active" for="all" onclick="setAnimalType('all')">Все</label>
+                            
+                            <input type="radio" class="btn-check" name="animalType" id="dogs" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="dogs" onclick="setAnimalType('dog')">Собаки</label>
+                            
+                            <input type="radio" class="btn-check" name="animalType" id="cats" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="cats" onclick="setAnimalType('cat')">Кошки</label>
+                        </div>
+                    </div>
+
+                    <!-- Размер -->
+                    <div class="mb-4">
+                        <h5 style="color: var(--dark-color);">Размер животного</h5>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="size" id="size-all" autocomplete="off" checked>
+                            <label class="btn btn-outline-primary active" for="size-all" onclick="setSize('all')">Любой</label>
+                            
+                            <input type="radio" class="btn-check" name="size" id="size-small" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="size-small" onclick="setSize('small')">Маленький</label>
+                            
+                            <input type="radio" class="btn-check" name="size" id="size-medium" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="size-medium" onclick="setSize('medium')">Средний</label>
+                            
+                            <input type="radio" class="btn-check" name="size" id="size-large" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="size-large" onclick="setSize('large')">Крупный</label>
+                        </div>
+                    </div>
+
+                    <!-- Уровень активности -->
+                    <div class="mb-4">
+                        <h5 style="color: var(--dark-color);">Уровень активности</h5>
+                        <div class="slider-container">
+                            <input type="range" class="form-range" min="1" max="3" step="1" id="activitySlider" 
+                                   oninput="updateActivityValue(this.value)" style="color: var(--primary-color);">
+                            <div class="d-flex justify-content-between">
+                                <span style="color: var(--dark-color);">Низкая</span>
+                                <span class="slider-value" id="activityValue">Средняя</span>
+                                <span style="color: var(--dark-color);">Высокая</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Время ухода -->
+                    <div class="mb-4">
+                        <h5 style="color: var(--dark-color);">Время на уход</h5>
+                        <div class="slider-container">
+                            <input type="range" class="form-range" min="1" max="3" step="1" id="careSlider" 
+                                   oninput="updateCareValue(this.value)">
+                            <div class="d-flex justify-content-between">
+                                <span style="color: var(--dark-color);">Минимум</span>
+                                <span class="slider-value" id="careValue">Средне</span>
+                                <span style="color: var(--dark-color);">Много</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Дополнительные параметры -->
+                    <div class="mb-4">
+                        <h5 style="color: var(--dark-color);">Дополнительно</h5>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="kids" onchange="updateFilters()">
+                            <label class="form-check-label" for="kids" style="color: var(--dark-color);">Есть дети</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="otherPets" onchange="updateFilters()">
+                            <label class="form-check-label" for="otherPets" style="color: var(--dark-color);">Есть другие животные</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="allergy" onchange="updateFilters()">
+                            <label class="form-check-label" for="allergy" style="color: var(--dark-color);">Аллергия на шерсть</label>
+                        </div>
+                    </div>
+
+                    <!-- Кнопки -->
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-lg" onclick="findMatches()">
+                            <i class="fas fa-search me-2"></i>Найти подходящие породы
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="resetFilters()">
+                            <i class="fas fa-redo me-2"></i>Сбросить все фильтры
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Правая колонка - результаты -->
+            <div class="col-lg-8">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 style="color: var(--dark-color);">Результаты подбора</h4>
+                    <span class="text-muted" id="results-count">Найдено 0 пород</span>
+                </div>
+
+                <div class="row" id="results-container">
+                    <!-- Результаты появятся здесь -->
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-filter fa-4x mb-3" style="color: var(--secondary-color);"></i>
+                        <h5 style="color: var(--dark-color);">Задайте параметры поиска</h5>
+                        <p class="text-muted">Используйте фильтры слева, чтобы найти идеальную породу</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подвал -->
+    <footer class="py-4 mt-5" style="background-color: var(--dark-color); color: white;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-paw me-2"></i>AnimalBase</h5>
+                    <p>Умный подбор пород домашних животных</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>Контакты: info@animalbase.ru</p>
+                    <p>© 2025 Все права защищены</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Расширенная база данных для подбора с ССЫЛКАМИ НА ФОТОГРАФИИ
+        const breedsForFiltering = [
+            // СОБАКИ
+            { 
+                id: 1, 
+                name: "Лабрадор-ретривер", 
+                type: "dog", 
+                size: "large", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                matchScore: 0,
+                description: "Идеальная семейная собака, любит детей",
+                image: "https://www.fendale.ch/_files/13138946_1739845976259461_7770631004785622437_n.jpg"
+            },
+            { 
+                id: 2, 
+                name: "Немецкая овчарка", 
+                type: "dog", 
+                size: "large", 
+                activity: "high",
+                careTime: "high",
+                goodWithKids: true,
+                goodWithPets: false,
+                hypoallergenic: false,
+                matchScore: 0,
+                description: "Умная и преданная служебная порода",
+                image: "https://images.petpress.net/wp-content/uploads/2020/05/german-shepherd-names-1.jpg?strip=all&lossy=1&ssl=1"
+            },
+            { 
+                id: 3, 
+                name: "Золотистый ретривер", 
+                type: "dog", 
+                size: "large", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                matchScore: 0,
+                description: "Добродушная семейная собака",
+                image: "https://petgid.ru/wp-content/uploads/2021/02/zolotistyj-retriver-1.jpg"
+            },
+            { 
+                id: 4, 
+                name: "Такса", 
+                type: "dog", 
+                size: "small", 
+                activity: "medium",
+                careTime: "low",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                matchScore: 0,
+                description: "Храбрая и энергичная охотничья собака",
+                image: "https://breeds-info.ru/photo/taksa-standartnaya-g-sh-f3.jpg"
+            },
+            { 
+                id: 5, 
+                name: "Бигль", 
+                type: "dog", 
+                size: "medium", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                matchScore: 0,
+                description: "Дружелюбная охотничья собака",
+                image: "https://th.bing.com/th/id/R.54c477f26a6a67f9a0adb084699a0d65?rik=RNyHztGGQIaPOw&riu=http%3a%2f%2fmirsobak.net%2fwp-content%2fuploads%2fbigl-2.jpg&ehk=6fPJdaP8gRLRJpg8oDNkRZxL17wgeW1APQNP8K5N2xU%3d&risl=&pid=ImgRaw&r=0"
+            },
+            { 
+                id: 6, 
+                name: "Французский бульдог", 
+                type: "dog", 
+                size: "small", 
+                activity: "low",
+                careTime: "low",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                matchScore: 0,
+                description: "Компактная собака-компаньон",
+                image: "https://upload.chien.com/upload_global/61/81529-121277_full.jpg"
+            },
+            { 
+                id: 7, 
+                name: "Йоркширский терьер", 
+                type: "dog", 
+                size: "small", 
+                activity: "medium",
+                careTime: "medium",
+                goodWithKids: false,
+                goodWithPets: true,
+                hypoallergenic: true,
+                matchScore: 0,
+                description: "Маленькая декоративная порода",
+                image: "https://klike.net/uploads/posts/2019-06/1559543837_30.jpg"
+            },
+            { 
+                id: 8, 
+                name: "Пудель", 
+                type: "dog", 
+                size: "medium", 
+                activity: "high",
+                careTime: "high",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                matchScore: 0,
+                description: "Умная и гипоаллергенная порода",
+                image: "https://lapkins.ru/upload/iblock/6e5/6e52cb986e51a236498ecb062598d8a9.jpg"
+            },
+            { 
+                id: 9, 
+                name: "Сибирский хаски", 
+                type: "dog", 
+                size: "large", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                matchScore: 0,
+                description: "Энергичная ездовая собака",
+                image: "https://puplore.com/wp-content/uploads/Siberian-Husky-1-768x512.jpg"
+            },
+            { 
+                id: 10, 
+                name: "Ротвейлер", 
+                type: "dog", 
+                size: "large", 
+                activity: "medium",
+                careTime: "medium",
+                goodWithKids: false,
+                goodWithPets: false,
+                hypoallergenic: false,
+                matchScore: 0,
+                description: "Сильная служебная порода",
+                image: "https://s0.rbk.ru/v6_top_pics/media/img/7/24/347186385495247.webp"
+            },
+            { 
+                id: 11, 
+                name: "Чихуахуа", 
+                type: "dog", 
+                size: "small", 
+                activity: "low",
+                careTime: "low",
+                goodWithKids: false,
+                goodWithPets: false,
+                hypoallergenic: true,
+                matchScore: 0,
+                description: "Самая маленькая порода собак",
+                image: "https://tse3.mm.bing.net/th/id/OIP.ou_pPIbqjsN4C1zPu_JGmwHaEK?rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 12, 
+                name: "Джек рассел терьер", 
+                type: "dog", 
+                size: "small", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                matchScore: 0,
+                description: "Энергичная охотничья собака",
+                image: "https://th.bing.com/th/id/R.ab1732d1b64dd345983aaa80698c157c?rik=em04KkUDKxrYwQ&pid=ImgRaw&r=0"
+            },
+            { 
+                id: 13, 
+                name: "Боксер", 
+                type: "dog", 
+                size: "large", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: false,
+                hypoallergenic: false,
+                matchScore: 0,
+                description: "Сильная, энергичная семейная собака",
+                image: "https://bk-halle.de/fileadmin/_processed_/0/a/csm_dj_von_der_kleinen_hexe_5600156695.jpg"
+            },
+            { 
+                id: 14, 
+                name: "Шпиц", 
+                type: "dog", 
+                size: "small", 
+                activity: "medium",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                matchScore: 0,
+                description: "Пушистая, дружелюбная порода",
+                image: "https://awesomeworld.ru/wp-content/uploads/2017/10/shpic_6.jpg"
+            },
+            { 
+                id: 15, 
+                name: "Далматин", 
+                type: "dog", 
+                size: "large", 
+                activity: "high",
+                careTime: "low",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                matchScore: 0,
+                description: "Элегантная, энергичная порода",
+                image: "https://th.bing.com/th/id/R.e51ff7befcd3d13c463d81c4f2d9afec?rik=vzvEgaXEQXqk6Q&pid=ImgRaw&r=0"
+            },
+            { 
+                id: 16, 
+                name: "Колли", 
+                type: "dog", 
+                size: "large", 
+                activity: "high",
+                careTime: "high",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                matchScore: 0,
+                description: "Умная пастушья собака",
+                image: "https://tse3.mm.bing.net/th/id/OIP.4xB5bWicneEzVJbz74H73wHaE8?rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 17, 
+                name: "Мопс", 
+                type: "dog", 
+                size: "small", 
+                activity: "low",
+                careTime: "low",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                matchScore: 0,
+                description: "Компактная, добродушная порода",
+                image: "https://tse1.mm.bing.net/th/id/OIP.l0B1XzptyYDVpXhUQK4OXwAAAA?rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 18, 
+                name: "Сенбернар", 
+                type: "dog", 
+                size: "large", 
+                activity: "low",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                matchScore: 0,
+                description: "Огромная собака-спасатель",
+                image: "https://tse3.mm.bing.net/th/id/OIP.QtYU9NqJmkH_gnwE4ims5wHaGJ?w=1000&h=831&rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            
+            // КОШКИ (14 пород)
+            { 
+                id: 19, 
+                name: "Сиамская кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high",
+                careTime: "low",
+                goodWithKids: false,
+                goodWithPets: false,
+                hypoallergenic: true,
+                matchScore: 0,
+                description: "Энергичная и разговорчивая",
+                image: "https://petsi.net/images/catbreed/siamskaya.jpg"
+            },
+            { 
+                id: 20, 
+                name: "Мейн-кун", 
+                type: "cat", 
+                size: "large", 
+                activity: "medium",
+                careTime: "high",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                matchScore: 0,
+                description: "Добродушный гигант",
+                image: "https://image.fonwall.ru/o/tc/cat-lies-maine-coon.jpg?auto=compress&fit=crop&w=1920&h=1080&domain=img3.fonwall.ru"
+            },
+            { 
+                id: 21, 
+                name: "Британская короткошёрстная", 
+                type: "cat", 
+                size: "medium", 
+                activity: "low",
+                careTime: "low",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                matchScore: 0,
+                description: "Спокойная и независимая",
+                image: "https://s1.1zoom.ru/big0/460/British_Shorthair_Cats_Grass_Sitting_Ginger_color_600459_1280x853.jpg"
+            },
+            { 
+                id: 22, 
+                name: "Сфинкс", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high",
+                careTime: "high",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                matchScore: 0,
+                description: "Энергичная бесшёрстная кошка",
+                image: "https://www.kimballstock.com/pix/ani/p/02/cat-02-je0354-01p.jpg"
+            },
+            { 
+                id: 23, 
+                name: "Персидская кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "low",
+                careTime: "high",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                matchScore: 0,
+                description: "Спокойная аристократка",
+                image: "https://pipcat.ru/wp-content/uploads/2016/10/persidskij_kot_kot_pushistyj_serdityj_103850_2048x12801.jpg"
+            },
+            { 
+                id: 24, 
+                name: "Шотландская вислоухая", 
+                type: "cat", 
+                size: "medium", 
+                activity: "medium",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                matchScore: 0,
+                description: "Добродушная вислоухая кошка",
+                image: "https://www.min-petlife.com/data/article/25417/main_25417_68e3d_detail.jpg"
+            },
+            { 
+                id: 25, 
+                name: "Бенгальская кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: false,
+                goodWithPets: false,
+                hypoallergenic: true,
+                matchScore: 0,
+                description: "Активная кошка с диким окрасом",
+                image: "https://tse3.mm.bing.net/th/id/OIP.-Jv-c3pggsvia855oyoSiQHaEK?rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 26, 
+                name: "Абиссинская кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                matchScore: 0,
+                description: "Энергичная и любопытная",
+                image: "https://ikoshki.ru/wp-content/uploads/2023/06/abissinskaja-poroda-koshek-1-768x512.jpg"
+            },
+            { 
+                id: 27, 
+                name: "Русская голубая", 
+                type: "cat", 
+                size: "medium", 
+                activity: "medium",
+                careTime: "low",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                matchScore: 0,
+                description: "Элегантная и сдержанная",
+                image: "https://blue-fantasy.net/thumb/2/zCgaDpoaaNMo23QKtLmw1g/r/d/img_8081.jpg"
+            },
+            { 
+                id: 28, 
+                name: "Норвежская лесная", 
+                type: "cat", 
+                size: "large", 
+                activity: "medium",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                matchScore: 0,
+                description: "Крупная, пушистая кошка",
+                image: "https://tse1.mm.bing.net/th/id/OIP.U-dD4AIbEfv0vM39UsUFWwHaEo?w=768&h=480&rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 29, 
+                name: "Ориентальная кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high",
+                careTime: "low",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                matchScore: 0,
+                description: "Элегантная, общительная и разговорчивая",
+                image: "https://cat4you.ru/wp-content/uploads/0/e/f/0efc6e635266eb9bcd6974f2e3d81da5.jpeg"
+            },
+            { 
+                id: 30, 
+                name: "Рэгдолл", 
+                type: "cat", 
+                size: "large", 
+                activity: "low",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                matchScore: 0,
+                description: "Спокойная кошка для семьи",
+                image: "https://tse1.mm.bing.net/th/id/OIP.DG7nHHY5kJOsk_zKzX2c1AHaEW?w=626&h=368&rs=1&pid=ImgDetMain&o=7&rm=3"
+            },
+            { 
+                id: 31, 
+                name: "Бурманская кошка", 
+                type: "cat", 
+                size: "medium", 
+                activity: "medium",
+                careTime: "low",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: true,
+                matchScore: 0,
+                description: "Общительная, ласковая",
+                image: "https://pichold.ru/wp-content/uploads/2018/11/s1200-6-3-1024x766.jpg"
+            },
+            { 
+                id: 32, 
+                name: "Турецкая ангора", 
+                type: "cat", 
+                size: "medium", 
+                activity: "high",
+                careTime: "medium",
+                goodWithKids: true,
+                goodWithPets: true,
+                hypoallergenic: false,
+                matchScore: 0,
+                description: "Элегантная, активная кошка",
+                image: "https://avatars.dzeninfra.ru/get-zen_doc/271828/pub_6618c843d770996ce9bfb2e2_6618c878395afa08893654bd/scale_1200"
+            }
+        ];
+
+        // Текущие фильтры
+        let currentFilters = {
+            animalType: 'all',
+            size: 'all',
+            activity: 'medium',
+            careTime: 'medium',
+            hasKids: false,
+            hasOtherPets: false,
+            hasAllergy: false
+        };
+
+        // Обновление слайдеров
+        function updateActivityValue(value) {
+            const texts = ["Низкая", "Средняя", "Высокая"];
+            document.getElementById('activityValue').textContent = texts[value-1];
+            currentFilters.activity = value === '1' ? 'low' : value === '2' ? 'medium' : 'high';
+        }
+
+        function updateCareValue(value) {
+            const texts = ["Минимум", "Средне", "Много"];
+            document.getElementById('careValue').textContent = texts[value-1];
+            currentFilters.careTime = value === '1' ? 'low' : value === '2' ? 'medium' : 'high';
+        }
+
+        // Установка типа животного
+        function setAnimalType(type) {
+            currentFilters.animalType = type;
+            
+            // Обновляем визуальное выделение
+            const buttons = document.querySelectorAll('.btn-group[name="animalType"] .btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Находим и активируем соответствующую кнопку
+            let targetBtn;
+            if (type === 'all') {
+                targetBtn = document.querySelector('label[for="all"]');
+            } else if (type === 'dog') {
+                targetBtn = document.querySelector('label[for="dogs"]');
+            } else if (type === 'cat') {
+                targetBtn = document.querySelector('label[for="cats"]');
+            }
+            
+            if (targetBtn) {
+                targetBtn.classList.add('active');
+            }
+        }
+
+        // Установка размера
+        function setSize(size) {
+            currentFilters.size = size;
+            
+            // Обновляем визуальное выделение
+            const buttons = document.querySelectorAll('.btn-group[name="size"] .btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Находим и активируем соответствующую кнопку
+            let targetBtn;
+            if (size === 'all') {
+                targetBtn = document.querySelector('label[for="size-all"]');
+            } else if (size === 'small') {
+                targetBtn = document.querySelector('label[for="size-small"]');
+            } else if (size === 'medium') {
+                targetBtn = document.querySelector('label[for="size-medium"]');
+            } else if (size === 'large') {
+                targetBtn = document.querySelector('label[for="size-large"]');
+            }
+            
+            if (targetBtn) {
+                targetBtn.classList.add('active');
+            }
+        }
+
+        // Обновление чекбоксов
+        function updateFilters() {
+            currentFilters.hasKids = document.getElementById('kids').checked;
+            currentFilters.hasOtherPets = document.getElementById('otherPets').checked;
+            currentFilters.hasAllergy = document.getElementById('allergy').checked;
+        }
+
+        // Поиск совпадений
+        function findMatches() {
+            const results = breedsForFiltering.map(breed => {
+                let score = 0;
+                
+                // Проверка типа животного
+                if (currentFilters.animalType !== 'all' && breed.type !== currentFilters.animalType) {
+                    return { ...breed, matchScore: 0 };
+                }
+                
+                // Проверка размера
+                if (currentFilters.size !== 'all' && breed.size !== currentFilters.size) {
+                    return { ...breed, matchScore: 0 };
+                }
+                
+                // Базовый балл
+                score += 30;
+                
+                // Активность (макс 20 баллов)
+                if (breed.activity === currentFilters.activity) score += 20;
+                else if (Math.abs(activityLevel(breed.activity) - activityLevel(currentFilters.activity)) === 1) score += 10;
+                
+                // Время ухода (макс 20 баллов)
+                if (breed.careTime === currentFilters.careTime) score += 20;
+                else if (Math.abs(careLevel(breed.careTime) - careLevel(currentFilters.careTime)) === 1) score += 10;
+                
+                // Совместимость с детьми (10 баллов)
+                if (currentFilters.hasKids && breed.goodWithKids) score += 10;
+                
+                // Совместимость с животными (10 баллов)
+                if (currentFilters.hasOtherPets && breed.goodWithPets) score += 10;
+                
+                // Аллергия (10 баллов)
+                if (currentFilters.hasAllergy && breed.hypoallergenic) score += 10;
+                
+                return { ...breed, matchScore: score };
+            });
+            
+            // Сортировка по релевантности
+            const filteredResults = results.filter(b => b.matchScore > 0)
+                                          .sort((a, b) => b.matchScore - a.matchScore);
+            
+            displayResults(filteredResults);
+        }
+
+        function activityLevel(activity) {
+            return activity === 'low' ? 1 : activity === 'medium' ? 2 : 3;
+        }
+
+        function careLevel(care) {
+            return care === 'low' ? 1 : care === 'medium' ? 2 : 3;
+        }
+
+        // Отображение результатов
+        function displayResults(results) {
+            const container = document.getElementById('results-container');
+            document.getElementById('results-count').textContent = `Найдено ${results.length} пород`;
+            
+            if (results.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-search fa-4x mb-3" style="color: var(--secondary-color);"></i>
+                        <h5 style="color: var(--dark-color);">Совпадений не найдено</h5>
+                        <p class="text-muted">Попробуйте изменить параметры поиска</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = results.map(breed => {
+                const percentage = Math.min(100, breed.matchScore);
+                const matchColor = percentage > 80 ? 'primary' : percentage > 60 ? 'warning' : 'info';
+                
+                return `
+                <div class="col-md-6 mb-4">
+                    <div class="card result-card h-100">
+                        <div class="card-img-container">
+                            <img src="${breed.image}" class="breed-image" alt="${breed.name}">
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="card-title mb-0" style="color: var(--dark-color);">${breed.name}</h5>
+                                <span class="badge ${breed.type === 'dog' ? 'badge-dog' : 'badge-cat'}" style="${breed.type === 'dog' ? 'background-color: var(--primary-color);' : 'background-color: var(--secondary-color); color: var(--dark-color);'}">
+                                    ${breed.type === 'dog' ? 'Собака' : 'Кошка'}
+                                </span>
+                            </div>
+                            
+                            <div class="match-badge">
+                                <span class="badge ${percentage > 80 ? 'bg-primary' : percentage > 60 ? 'bg-warning' : 'bg-info'}">${percentage}% совпадение</span>
+                            </div>
+                            
+                            <p class="card-text">${breed.description}</p>
+                            
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <small style="color: var(--dark-color);">Совпадение:</small>
+                                    <small style="color: var(--primary-color); font-weight: bold;">${percentage}%</small>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar ${percentage > 80 ? 'bg-primary' : percentage > 60 ? 'bg-warning' : 'bg-info'}" style="width: ${percentage}%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="row small text-muted">
+                                <div class="col-6">
+                                    <i class="fas fa-${breed.activity === 'high' ? 'running' : breed.activity === 'medium' ? 'walking' : 'couch'} me-1"></i>
+                                    ${breed.activity === 'high' ? 'Высокая' : breed.activity === 'medium' ? 'Средняя' : 'Низкая'} активность
+                                </div>
+                                <div class="col-6">
+                                    <i class="fas fa-clock me-1"></i>
+                                    ${breed.careTime === 'high' ? 'Много' : breed.careTime === 'medium' ? 'Средне' : 'Минимум'} ухода
+                                </div>
+                                <div class="col-6 mt-1">
+                                    <i class="fas fa-child me-1"></i>
+                                    ${breed.goodWithKids ? 'Дружит с детьми' : 'Не для детей'}
+                                </div>
+                                <div class="col-6 mt-1">
+                                    <i class="fas fa-paw me-1"></i>
+                                    ${breed.hypoallergenic ? 'Гипоаллергенная' : 'Может вызывать аллергию'}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-0 pt-0">
+                            <button class="btn btn-sm btn-outline-primary w-100" onclick="addToComparison(${breed.id})">
+                                <i class="fas fa-exchange-alt me-1"></i>Добавить к сравнению
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // Сброс фильтров
+        function resetFilters() {
+            // Сбрасываем радио-кнопки
+            document.getElementById('all').checked = true;
+            document.getElementById('size-all').checked = true;
+            
+            // Сбрасываем слайдеры
+            document.getElementById('activitySlider').value = 2;
+            document.getElementById('careSlider').value = 2;
+            
+            // Сбрасываем чекбоксы
+            document.getElementById('kids').checked = false;
+            document.getElementById('otherPets').checked = false;
+            document.getElementById('allergy').checked = false;
+            
+            // Обновляем значения
+            updateActivityValue(2);
+            updateCareValue(2);
+            
+            // Сбрасываем текущие фильтры
+            currentFilters = {
+                animalType: 'all',
+                size: 'all',
+                activity: 'medium',
+                careTime: 'medium',
+                hasKids: false,
+                hasOtherPets: false,
+                hasAllergy: false
+            };
+            
+            // Сбрасываем визуальное выделение кнопок
+            const animalButtons = document.querySelectorAll('.btn-group[name="animalType"] .btn');
+            animalButtons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector('label[for="all"]').classList.add('active');
+            
+            const sizeButtons = document.querySelectorAll('.btn-group[name="size"] .btn');
+            sizeButtons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector('label[for="size-all"]').classList.add('active');
+            
+            // Сбрасываем результаты
+            document.getElementById('results-container').innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-filter fa-4x mb-3" style="color: var(--secondary-color);"></i>
+                    <h5 style="color: var(--dark-color);">Задайте параметры поиска</h5>
+                    <p class="text-muted">Используйте фильтры слева, чтобы найти идеальную породу</p>
+                </div>
+            `;
+            document.getElementById('results-count').textContent = 'Найдено 0 пород';
+        }
+
+        // Добавление в сравнение
+        function addToComparison(breedId) {
+            const breed = breedsForFiltering.find(b => b.id === breedId);
+            if (breed) {
+                let comparisonList = JSON.parse(localStorage.getItem('comparisonList')) || [];
+                if (!comparisonList.includes(breedId)) {
+                    if (comparisonList.length >= 3) {
+                        alert('Можно сравнивать не более 3 пород одновременно');
+                        return;
+                    }
+                    comparisonList.push(breedId);
+                    localStorage.setItem('comparisonList', JSON.stringify(comparisonList));
+                    alert(`Порода "${breed.name}" добавлена к сравнению`);
+                } else {
+                    alert('Эта порода уже в списке сравнения');
+                }
+            }
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            updateActivityValue(2);
+            updateCareValue(2);
+            
+            // Добавляем обработчики для кнопок фильтров
+            document.querySelectorAll('.btn-group .btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    // Находим родительскую группу
+                    const parent = this.closest('.btn-group');
+                    
+                    // Удаляем активный класс у всех кнопок в группе
+                    parent.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+                    
+                    // Добавляем активный класс к нажатой кнопке
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
