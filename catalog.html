@@ -752,6 +752,9 @@
         }
 
         function goToComparison() {
+            if (typeof ym !== 'undefined') {
+                ym(106859410,'reachGoal','COMPARE_CLICK');
+            }
             if (comparisonList.length > 0) {
                 window.location.href = 'compare.html';
             } else {

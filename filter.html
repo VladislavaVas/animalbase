@@ -917,7 +917,9 @@
 
         // Поиск совпадений
         function findMatches() {
-            ym(106859410,'reachGoal','FIND_BREED_CLICK');
+            if (typeof ym !== 'undefined') {
+                ym(106859410,'reachGoal','FIND_BREED_CLICK');
+            }
             const results = breedsForFiltering.map(breed => {
                 let score = 0;
                 
